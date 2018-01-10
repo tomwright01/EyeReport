@@ -9,7 +9,10 @@ from tempfile import mkdtemp
 @app.route('/')
 @app.route('/index')
 def index():
-	return render_template('index.html', title="Home")
+    if session.get('key'):
+        flash('Session value set: {}'.format(session.get('key')))
+        session.pop('key')
+    return render_template('index.html', title="Home")
 
 @app.route('/import', methods=['GET', 'POST'])
 def import_data():
@@ -29,7 +32,7 @@ def import_data():
         data_obj = read_export_file(target_file)
         flash('Data for:{} {} uploaded.'.format(data_obj['headers']['Family Name'],
                                                 data_obj['headers']['First Name']))
-        
+        session['key'] = 'test123'
         return redirect('/index')
         
     return render_template('import.html', title='Import', form=form)
