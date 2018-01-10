@@ -1,0 +1,26 @@
+<html>
+    <head>
+    {% if title %}
+    <title> {{ title }} - Patient Database</title>
+    {% else %}
+    <title>Patient Database</title>
+    {% endif %}
+    </head>
+    <body>
+        <div>Patient Db: 
+        <a href="/index">Home</a>
+        <a href="/import">Import</a>
+        </div>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+</html>
