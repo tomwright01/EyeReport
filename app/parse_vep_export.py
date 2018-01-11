@@ -27,7 +27,7 @@ def move_top(f, lines):
     for i in range(lines - 1):
         f.readline()
 
-def parse_contents(f):
+def parse_contents(f, sep):
     """
     Read the contents table from an espion export file.
     Returns a dict with the contents
@@ -41,7 +41,7 @@ def parse_contents(f):
     f.readline()
     while True:
         line = f.readline()
-        line = line.split('\t')
+        line = line.split(sep)
         if line[0] == '':
             break
         contents_table[line[0]] = {'left': as_int(line[1]),
@@ -50,7 +50,7 @@ def parse_contents(f):
                                    'bottom': as_int(line[4])}
     return contents_table
 
-def parse_header_section(f, contents):
+def parse_header_section(f, contents, sep):
 
     if not 'Header Table' in contents.keys():
         raise FileError
@@ -63,7 +63,7 @@ def parse_header_section(f, contents):
 
     while True:
         line = f.readline()
-        line = line.split('\t')
+        line = line.split(sep)
         values = line[locations['left']-1:locations['right']]
         if ''.join(values) == '':
             break
@@ -79,7 +79,7 @@ def parse_header_section(f, contents):
 
     return(headers)
 
-def parse_marker_section(f, contents):
+def parse_marker_section(f, contents, sep):
     if not 'Marker Table' in contents.keys():
         raise FileError
 
@@ -95,7 +95,7 @@ def parse_marker_section(f, contents):
 
     while True:
         line = f.readline()
-        line = line.split('\t')
+        line = line.split(sep)
         values = line[locations['left']-1:locations['right']]
         if ''.join(values) == '':
             break
@@ -140,7 +140,7 @@ def parse_marker_section(f, contents):
 
     return(markers)
 
-def parse_summary_table(f, contents):
+def parse_summary_table(f, contents, sep):
     if not 'Summary Table' in contents.keys():
         raise FileError
 
@@ -151,7 +151,7 @@ def parse_summary_table(f, contents):
 
     while True:
         line = f.readline()
-        line = line.split('\t')
+        line = line.split(sep)
         values = line[locations['left']-1:locations['right']]
         if ''.join(values) == '':
             break
@@ -168,7 +168,7 @@ def parse_summary_table(f, contents):
 
     return steps
 
-def parse_stimulus_table(f, contents):
+def parse_stimulus_table(f, contents, sep):
     if not 'Stimulus Table' in contents.keys():
         raise FileError('Stimulus table not found')
 
@@ -179,7 +179,7 @@ def parse_stimulus_table(f, contents):
 
     while True:
         line = f.readline()
-        line = line.split('\t')
+        line = line.split(sep)
         values = line[locations['left']-1:locations['right']]
         if ''.join(values) == '':
             break
@@ -190,7 +190,7 @@ def parse_stimulus_table(f, contents):
 
     return stimuli
 
-def parse_data_table(f, contents):
+def parse_data_table(f, contents, sep):
     if not 'Data Table' in contents.keys():
         raise FileError('Data table not found')
 
@@ -207,7 +207,7 @@ def parse_data_table(f, contents):
     # parse the data summary table to find locations for the trials etc.
     while True:
         line = f.readline()
-        line = line.split('\t')
+        line = line.split(sep)
         # ERG step summary info has 5 columns
         values = line[locations['left']-1:locations['left'] + 5]
         if ''.join(values) == '':
@@ -243,9 +243,9 @@ def parse_data_table(f, contents):
 
     # need firt two lines to determine timeseries parameters
     line_one = f.readline()
-    line_one = line_one.split('\t')
+    line_one = line_one.split(sep)
     line_two = f.readline()
-    line_two = line_two.split('\t')
+    line_two = line_two.split(sep)
 
     for step_id, step in data.items():
         time_start = float(line_one[step.column - 1])
@@ -263,7 +263,7 @@ def parse_data_table(f, contents):
 
     while True:
         values = f.readline()
-        values = values.split('\t')
+        values = values.split(sep)
         if ''.join(values) == '':
             break
         for step_id, step in data.items():
@@ -274,10 +274,10 @@ def parse_data_table(f, contents):
                         result.trials[trial_no].values.append(float(values[result.column + trial_no]))
     return(data)
 
-def read_export_file(filepath):
+def read_export_file(filepath, sep='\t'):
     with open(filepath, 'r') as f:
         line = f.readline()
-        if not line.strip().split('\t')[0] == 'Contents Table':
+        if not line.strip().split(sep)[0] == 'Contents Table':
             raise FileError
         f.seek(0)
         contents = parse_contents(f)

@@ -16,13 +16,13 @@ def move_top(f, lines):
     for i in range(lines - 1):
         f.readline()
 
-def parse_parameters(f):
+def parse_parameters(f, sep):
     logger.debug('Parsing parameters')
     parameters = {}
     move_top(f, 2)
     while True:
         line = f.readline()
-        line = line.split('\t')
+        line = line.split(sep)
         if line[0] == '':
             break
         parameters[line[0]] = line[1]
@@ -34,14 +34,14 @@ def parse_parameters(f):
 
     return parameters
 
-def parse_markers(f):
+def parse_markers(f, sep):
     logger.debug('Parsing markers')
     hexagons = {}
 
     move_top(f, 1)
-    line = read_split_line(f)
+    line = read_split_line(f, split=sep)
     start_col = find_section_col(line, 'Hexagon')
-    line = read_split_line(f, start_col=start_col)
+    line = read_split_line(f, split=sep, start_col=start_col)
     if line[5] == 'Left Eye':
         # both eyes exported
         binocular = True
@@ -51,7 +51,7 @@ def parse_markers(f):
 
     f.readline()
     while True:
-        line = read_split_line(f, start_col=start_col)
+        line = read_split_line(f, split=sep, start_col=start_col)
         if line[0] == '':
             break
         hexagon1 = Hexagon(eye, line[0])
@@ -67,28 +67,28 @@ def parse_markers(f):
             hexagons[line[0]] = hexagon1
     return hexagons
 
-def parse_dimensions(f):
+def parse_dimensions(f, sep):
     logger.debug('Parsing dimensions')
     dimensions = {}
     move_top(f,1)
-    line = read_split_line(f)
+    line = read_split_line(f, split=sep)
     start_col = find_section_col(line, 'Dimensions')
 
     while True:
-        line = read_split_line(f, start_col=start_col)
+        line = read_split_line(f, split=sep, start_col=start_col)
         if line[0] == '':
             break
         dimensions[line[0]] = as_int(line[1])
     return dimensions
 
-def parse_positions(f):
+def parse_positions(f, sep):
     logger.debug('Parsing positions')
     locations = {}
     move_top(f,1)
-    line = read_split_line(f)
+    line = read_split_line(f, split=sep)
     start_col = find_section_col(line, ['Hexagon', 'X'])
     while True:
-        line = read_split_line(f, start_col=start_col)
+        line = read_split_line(f, split=sep, start_col=start_col)
         if not line or line[0] == '':
             break
         hex = line[0]
@@ -97,13 +97,13 @@ def parse_positions(f):
         x_locs.append(as_float(line[1]))
         y_locs.append(as_float(line[2]))
         for i in range(6):
-            line = read_split_line(f, start_col=start_col)
+            line = read_split_line(f, split=sep, start_col=start_col)
             x_locs.append(as_float(line[1]))
             y_locs.append(as_float(line[2]))
         locations[hex] = (x_locs, y_locs)
     return locations
 
-def parse_timeseries(f, hexcount):
+def parse_timeseries(f, hexcount, sep):
     logger.debug('Parsing timeseries')
     hexgons = {}
     col_head_raw = 'Hex {} (R)'
@@ -113,18 +113,18 @@ def parse_timeseries(f, hexcount):
                 'right': {'str':'Right Eye (nV)'}}
 
     move_top(f,1)
-    line = read_split_line(f)
+    line = read_split_line(f, split=sep)
 
     for key, val in eye_strs.items():
         try:
             eye_strs[key]['start_idx'] = find_section_col(line, val['str'])
         except IndexError:
             eye_strs[key]['start_idx'] = None
-    line = read_split_line(f)
+    line = read_split_line(f, split=sep)
     time_col = find_section_col(line, 'Time (ms)')
-    line = read_split_line(f)
+    line = read_split_line(f, split=sep)
     time_1 = as_float(line[time_col])
-    line = read_split_line(f)
+    line = read_split_line(f, split=sep)
     time_2 = as_float(line[time_col])
     delta = time_2 - time_1
     move_top(f, 2)
@@ -132,7 +132,7 @@ def parse_timeseries(f, hexcount):
     # find the column indexes for the raw and smooth data
     # going to populate each item (hexagon) in the dict with the column index
     # and a time series object
-    line = read_split_line(f)
+    line = read_split_line(f, split=sep)
     col_idx_raw = {}
     col_idx_smooth = {}
     for hex_id in range(hexcount):
@@ -149,7 +149,7 @@ def parse_timeseries(f, hexcount):
             col_idx_smooth[hex_id] = None
 
     while True:
-        line = read_split_line(f)
+        line = read_split_line(f, split=sep)
         if line[time_col] == '':
             break
         for hex_id in range(hexcount):
@@ -164,18 +164,18 @@ def parse_timeseries(f, hexcount):
 
     return({'raw': data_raw, 'smooth': data_smooth})
 
-def read_mferg_export_file(filepath):
+def read_mferg_export_file(filepath, sep='\t'):
     with open(filepath, 'r') as f:
         line = f.readline()
-        if not line.strip().split('\t')[0] == 'Parameter':
+        if not line.strip().split(sep)[0] == 'Parameter':
             raise FileError
         f.seek(0)
-        parameters = parse_parameters(f)
+        parameters = parse_parameters(f, sep)
         hex_count = as_int(parameters['Hexagons'])
-        markers = parse_markers(f)
-        dimensions = parse_dimensions(f)
-        positions = parse_positions(f)
-        data = parse_timeseries(f, hex_count)
+        markers = parse_markers(f, sep)
+        dimensions = parse_dimensions(f, sep)
+        positions = parse_positions(f, sep)
+        data = parse_timeseries(f, hex_count, sep)
     return({'params': parameters,
             'markers': markers,
             'dims': dimensions,
