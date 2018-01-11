@@ -179,7 +179,7 @@ def read_mferg_export_file(filepath):
     return({'params': parameters,
             'markers': markers,
             'dims': dimensions,
-            'positions': postitions,
+            'positions': positions,
             'data': data})
 
 if __name__=='__main__':

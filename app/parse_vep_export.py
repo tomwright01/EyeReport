@@ -1,5 +1,5 @@
 """
-Code to parse an espion export file
+Code to parse an espion VEP export file
 """
 from datetime import datetime
 import logging
