@@ -280,12 +280,12 @@ def read_export_file(filepath, sep='\t'):
         if not line.strip().split(sep)[0] == 'Contents Table':
             raise FileError
         f.seek(0)
-        contents = parse_contents(f)
-        header = parse_header_section(f, contents)
-        markers = parse_marker_section(f, contents)
-        summary = parse_summary_table(f, contents)
-        stimuli = parse_stimulus_table(f, contents)
-        data = parse_data_table(f, contents)
+        contents = parse_contents(f, sep)
+        header = parse_header_section(f, contents, sep)
+        markers = parse_marker_section(f, contents, sep)
+        summary = parse_summary_table(f, contents, sep)
+        stimuli = parse_stimulus_table(f, contents, sep)
+        data = parse_data_table(f, contents, sep)
     return({'contents':contents,
             'headers':header,
             'markers':markers,

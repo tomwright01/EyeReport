@@ -2,9 +2,9 @@
 """
 Code to parse an espion export file
 """
-from exceptions import EspionExportError
-from parse_vep_export import read_export_file
-from parse_mferg_export import read_mferg_export_file
+from app.exceptions import EspionExportError
+from app.parse_vep_export import read_export_file
+from app.parse_mferg_export import read_mferg_export_file
 import logging
 
 logger = logging.getLogger(__name__)
@@ -48,6 +48,7 @@ def load_file(fpath):
     or raises an EspionExportError
     """
     info = find_type(fpath)
+
     try:
         if info['type'] == 'mferg':
             data = read_mferg_export_file(fpath, sep=info['sep'])

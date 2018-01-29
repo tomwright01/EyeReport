@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div>
+        <h1>Store Data</h1>
+        {% if ptn %}
+            <h2>Found a patient:</h2>
+            {% include 'ptn_button.snip.html' %}
+        {% else %}
+            <h2>Patient not found</h2>
+        {% endif %}
+    </div>
+    <div>
+        <a href="{{url_for('store_data', confirm=True) }}" class="btn btn-success">Confirm</a>
+        <a href="{{url_for('store_data', confirm=False) }}" class="btn btn-warning">Cancel</a>
+    </div>
+{% endblock %}
