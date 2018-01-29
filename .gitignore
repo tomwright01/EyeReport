@@ -2,3 +2,4 @@ data/
 config.py
 *__pycache__*
 .spyproject/
+app/static/js/plotly-latest.min.js
