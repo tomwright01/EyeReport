@@ -109,6 +109,8 @@ def store_data():
 
 
 @app.route('/patient/<id>', methods=['GET','POST'])
+def patient(patient_id):
+    
 
 @app.route('/addreport/<testtype>', methods=['GET','POST'])
 def addreport(testtype):

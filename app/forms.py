@@ -8,13 +8,15 @@ class DataForm(FlaskForm):
     data_file = FileField(validators=[FileRequired()])
     submit = SubmitField('Upload')
 
+class PatientForm(FlaskForm):
+    
+
 
 class ReportForm(FlaskForm):
     visit_id = IntegerField()
     information = TextAreaField(label='Information',
                                 description='Referral information',
                                 validators=InputRequired())
-    
 
 class ErgReport(ReportForm):
     responses_1 = [('1', 'Within expected limits'),
