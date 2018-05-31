@@ -14,6 +14,7 @@ def find_type(fpath):
     Reads an espion export file and determines if it is an mfERG or VEP/ERG
     export format.
     Returns a dict {'type': 'vep'|'mferg',
+                    'test': 'erg'|'mferg'|'vep',
                     'sep': '\t'|','|' '|';'|':'}
     """
     separators = {'tab': '\t',
@@ -37,7 +38,28 @@ def find_type(fpath):
             export_type = 'mferg'
         else:
             raise EspionExportError('Unknown Type')
+            
+        if export_type == 'mferg':
+            test_type = 'mferg'
+        else:
+            while True:
+                line = f.readline()
+                line = line.split(sep)
+                line = [value.strip() for value in line]
+                if 'Test method' in  line:
+                    test_type = line[line.index('Test method') + 1]
+                    if test_type == 'VEP Test':
+                        test_type = 'vep'
+                    elif test_type == 'ERG Test':
+                        test_type = 'erg'
+                    else:
+                        raise EspionExportError('Test type:{} is not recognised'
+                                                .format(test_type))
+                    break
+                    
+            
     return({'type': export_type,
+            'test_type': test_type,
             'sep': sep})
         
 def load_file(fpath):
@@ -48,7 +70,6 @@ def load_file(fpath):
     or raises an EspionExportError
     """
     info = find_type(fpath)
-
     try:
         if info['type'] == 'mferg':
             data = read_mferg_export_file(fpath, sep=info['sep'])

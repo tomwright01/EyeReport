@@ -13,4 +13,4 @@ session = Session(app)
 
 session.app.session_interface.db.create_all()
 
-from app import views, models
+from app import views, models, errors

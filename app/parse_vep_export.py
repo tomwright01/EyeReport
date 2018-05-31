@@ -190,7 +190,7 @@ def parse_stimulus_table(f, contents, sep):
 
     return stimuli
 
-def parse_data_table(f, contents, sep):
+def parse_data_table(f, contents, sep, summary_table):
     if not 'Data Table' in contents.keys():
         raise FileError('Data table not found')
 
@@ -212,6 +212,7 @@ def parse_data_table(f, contents, sep):
         values = line[locations['left']-1:locations['left'] + 5]
         if ''.join(values) == '':
             break
+
         step_no = int(values[0])
         step_col = int(values[1])
         chan_no = int(values[2])
@@ -219,14 +220,19 @@ def parse_data_table(f, contents, sep):
         result_col = int(values[4])
         trial_count = int(values[5])
 
+        # If a trial has been excluded from a single channel the result count
+        # in this table can be incorrect. 
+
+
         try:
             data[step_no].add_channel(chan_no)
         except KeyError:
             data[step_no] = Step(step_no)
             data[step_no].add_channel(chan_no)
 
-
-        data[step_no].column = step_col
+        if not data[step_no].column:
+            # this number is only valid for the first channel in a step
+            data[step_no].column = step_col
 
         logger.debug('Adding result: {} to channel:{} of step:{}'
                      .format(result_no, chan_no, step_no))
@@ -239,7 +245,12 @@ def parse_data_table(f, contents, sep):
         data[step_no].channels[chan_no].results[result_no].trial_count = trial_count
 
     # start reading the real data
-    move_top(f, locations['top'])
+    move_top(f, locations['top'] - 1)
+    # trial count value can be incorrect if a trial has been excluded from a 
+    # single channel. Going to capture the header column to ensure we are looking at 
+    # the correct column.
+    headers = f.readline()
+    headers = headers.split(sep)
 
     # need firt two lines to determine timeseries parameters
     line_one = f.readline()
@@ -257,6 +268,9 @@ def parse_data_table(f, contents, sep):
                 result.data.values.append(float(line_two[result.column - 1]))
 
                 for trial_no in range(result.trial_count):
+                    if headers[result.column + trial_no] != 'Trial (nV)':
+                        result.trial_count = trial_no
+                        break
                     result.trials.append(TimeSeries(time_start, time_delta))
                     result.trials[trial_no].values.append(float(line_one[result.column + trial_no]))
                     result.trials[trial_no].values.append(float(line_two[result.column + trial_no]))
@@ -285,7 +299,7 @@ def read_export_file(filepath, sep='\t'):
         markers = parse_marker_section(f, contents, sep)
         summary = parse_summary_table(f, contents, sep)
         stimuli = parse_stimulus_table(f, contents, sep)
-        data = parse_data_table(f, contents, sep)
+        data = parse_data_table(f, contents, sep, summary)
     return({'contents':contents,
             'headers':header,
             'markers':markers,

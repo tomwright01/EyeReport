@@ -3,6 +3,7 @@ Code to parse an espion mferg export file
 """
 from datetime import datetime
 import logging
+import re
 from app.espion_objects import TimeSeries, FileError, Hexagon
 from app.utils import as_int, as_float, read_split_line, find_section_col
 
@@ -105,7 +106,6 @@ def parse_positions(f, sep):
 
 def parse_timeseries(f, hexcount, sep):
     logger.debug('Parsing timeseries')
-    hexgons = {}
     col_head_raw = 'Hex {} (R)'
     col_head_smooth = 'Hex {} (S)'
 
@@ -164,6 +164,33 @@ def parse_timeseries(f, hexcount, sep):
 
     return({'raw': data_raw, 'smooth': data_smooth})
 
+def parse_smooth_string(str):
+    """
+    Parse an average string from parameters settings
+    """
+    p = '^(.*) \[(\d*)]'
+    m = re.match(p, str)
+    return(m.groups())
+
+def parse_filter_string(str):
+    """
+    Parse an filter string from parameters settings
+    """
+    p = '^(.*) \[(\d*)]'
+    m = re.match(p, str)
+    return(m.groups())
+
+def parse_luminance_string(str):
+    p = '^(\d*)(.*)'
+    m = re.match(p, str)
+    return(m.groups())
+
+def extract_number(str):
+    p = '(\d*)'
+    m = re.match(p, str)
+    return(m.group(1))
+
+
 def read_mferg_export_file(filepath, sep='\t'):
     with open(filepath, 'r') as f:
         line = f.readline()
@@ -176,11 +203,40 @@ def read_mferg_export_file(filepath, sep='\t'):
         dimensions = parse_dimensions(f, sep)
         positions = parse_positions(f, sep)
         data = parse_timeseries(f, hex_count, sep)
+        smooth_details = parse_smooth_string(parameters['Smoothing'])
+        filter_details = parse_filter_string(parameters['Filtering'])
+        lum_on_details = parse_luminance_string(parameters['Luminance On'])
+        lum_off_details = parse_luminance_string(parameters['Luminance Off'])
+        # do this to make these files similar format to ERG and VEP
+        protocol = {'hex_count': parameters['Hexagons'],
+                    'scaled': parameters['Scaled'],
+                    'distortion': parameters['Distortion'],
+                    'filter': parameters['Filter'],
+                    'base_period': extract_number(parameters['Base Period']),
+                    'correlated': extract_number(parameters['Correlated']),
+                    'sequence_len': parameters['Sequence Bits'],
+                    'smoothing_type': smooth_details[0].lower(),
+                    'smoothing_level': smooth_details[1],
+                    'filter_type': filter_details[0].lower(),
+                    'filter_level': filter_details[1],
+                    'filler_frames': parameters['Filler Frames'],
+                    'background': parameters['Background'].lower(),
+                    'color_on': parameters['Color On'],
+                    'luminance_on': lum_on_details[0],
+                    'color_off': parameters['Luminance Off'],
+                    'luminance_off': lum_off_details[0],
+                    'notch_filter': parameters['Mains Rejection'],
+                    'noise_rejection_passess': extract_number(parameters['Noise Rejection']),
+                    'description': 'mferg_{}_{}'.format(parameters['Hexagons'],
+                                                        parameters['Sequence Bits'])}
+    parameters['Protocol'] = 'MfERG_{}'.format(protocol['hex_count'])
+
     return({'params': parameters,
             'markers': markers,
             'dims': dimensions,
             'positions': positions,
-            'data': data})
+            'data': data,
+            'stimuli': protocol})
 
 if __name__=='__main__':
     fname = 'data/mferg-Both Eyes-11.22.2017.TXT'
