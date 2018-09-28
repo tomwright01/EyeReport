@@ -11,6 +11,7 @@ def load_data(fname):
     if file_info['type'] == 'mferg':
         header_info = data['params']
         visit_date_string = 'Test Date'
+        header_info['Protocol'] = '{Protocol}_{Sequence Bits}_{Smoothing}_{Filtering}_{Filler Frames}'.format(**header_info)
     elif file_info['type'] =='vep':
         header_info = data['headers']
         visit_date_string = 'Date performed'
@@ -55,8 +56,8 @@ def get_create_protocol(file_info, protocol_name, stimuli):
     param_switcher = {'erg': create_erg_protocol,
                       'vep': create_vep_protocol,
                       'mferg': create_mferg_protocol}
-
     protocol_qry = db.session.query(Protocol).filter_by(name = protocol_name)
+        
     if protocol_qry.count() < 1:
         protocol = Protocol()
         protocol.name = protocol_name
