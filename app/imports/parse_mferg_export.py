@@ -187,23 +187,27 @@ def parse_timeseries(f, hexcount, sep, markers=None):
             data[eye]= {}
             data[eye]['raw'] = {key: val[1] for key, val in col_idx_raw[eye].items()}
             data[eye]['smooth'] = {key: val[1] for key, val in col_idx_smooth[eye].items()}
-
+    logger.debug('Parsed timeseries')
     return(data)
 
 def parse_smooth_string(str):
     """
     Parse an average string from parameters settings
     """
-    p = '^(.*) \[(\d*)]'
+    p = '^(.*) \[(\d*)]|(Off)'
     m = re.match(p, str)
+    if m.group(3):
+        return(['Off',0])
     return(m.groups())
 
 def parse_filter_string(str):
     """
     Parse an filter string from parameters settings
     """
-    p = '^(.*) \[(\d*)]'
+    p = '^(.*) \[(\d*)]|(Off)'
     m = re.match(p, str)
+    if m.groups(3):
+        return('Off',0)
     return(m.groups())
 
 def parse_luminance_string(str):
