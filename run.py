@@ -1,6 +1,0 @@
-"""
-Run a flask application in development mode
-"""
-
-from app import app
-app.run(debug=True)
