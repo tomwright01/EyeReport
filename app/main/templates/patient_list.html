@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block app_content %}
+<div class="row">
+    {% for p in patients %}
+        <div class="col-xs-6 col-sm-3 col-md-2">
+            {% include '_patient.html' %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+

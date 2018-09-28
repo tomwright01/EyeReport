@@ -55,6 +55,8 @@ class Patient(db.Model):
                              back_populates="patients")
     visits = db.relationship("Visit",
                              back_populates="patient")
+    tests = db.relationship("Test",
+                            back_populates="patient")
 
     def get_add_patient(self, lname, fname, dob, gender, create=False):
         """
@@ -81,7 +83,6 @@ class Patient(db.Model):
         pat_phi.gender = gender.lower()
         self.phi = pat_phi
         db.session.add(self)
-        db.session.commit()
         
         return(self)
 
@@ -127,6 +128,9 @@ class Diagnosis(db.Model):
                                secondary=patient_diagnoses,
                                back_populates="diagnoses")
 
+def get_diagnosis():
+    return Diagnosis.query
+
 class Doctor(db.Model):
     """
     Referring doctors
@@ -140,6 +144,13 @@ class Doctor(db.Model):
     email = db.Column(db.Unicode(128))
     patients = db.relationship("Patient", back_populates="doctor")
     __table_args__ = (db.UniqueConstraint('lname','fname', name='uc_doctor'),)
+    
+    @property
+    def formatted_name(self):
+        return('Dr. {}. {}'.format(self.fname[0], self.lname))
+
+def get_doctors():
+    return Doctor.query
 
 class Visit(db.Model):
     """
@@ -169,6 +180,7 @@ class Visit(db.Model):
                                  self.id))
             return(None)
         test = Test()
+        test.patient = self.patient
         test.test_date = test_date
         test.visit = self
         db.session.add(test)
@@ -261,7 +273,10 @@ class StepChannel(db.Model):
     
     @hybrid_property
     def channel_name(self):
-        names = {1: 'RE', 2: 'LE', 3: 'RE_OP', 4: 'LE_OP'}
+        if self.step.test.protocol.protocol_class == 'mferg':
+            names = {1: 'RE_raw', 2: 'LE_raw', 3: 'RE_smooth', 4: 'LE_smooth'}
+        else:
+            names = {1: 'RE', 2: 'LE', 3: 'RE_OP', 4: 'LE_OP'}
         try:
             return(names[self.channel_no])
         except KeyError:
@@ -269,7 +284,11 @@ class StepChannel(db.Model):
     
     @channel_name.setter
     def channel_name(self, name):
-        names = {'RE': 1, 'LE': 2,'RE_OP': 3, 'LE_OP': 4}
+        if self.step.test.protocol.protocol_class == 'mferg':
+            names = {'RE_raw': 1, 'LE_raw': 2,'RE_smooth': 3, 'LE_smooth': 4}
+        else:
+            names = {'RE': 1, 'LE': 2,'RE_OP': 3, 'LE_OP': 4}
+
         try:
             self.channel_no = names[name.upper()]
         except KeyError:
@@ -288,6 +307,8 @@ class Result(db.Model):
     """
     Each result is owned by a StepChannel
     Each result can have a single time series.
+    
+    In the case of an mfERG each result represents a hexagon, result_no contains the hex_id
     """
     __tablename__ = 'results'
     id = db.Column(db.Integer, primary_key=True)
@@ -434,6 +455,8 @@ class Test(db.Model):
     test_date = db.Column(db.DateTime, nullable=False, index=True)
     visit_id = db.Column(db.Integer, db.ForeignKey('visits.id'))
     visit = db.relationship('Visit', back_populates="tests")    
+    patient_id = db.Column(db.Integer, db.ForeignKey("patients.id"))
+    patient = db.relationship('Patient', back_populates="tests")
     protocol_id = db.Column(db.Integer, db.ForeignKey('protocols.id'))
     protocol = db.relationship('Protocol', back_populates="tests")
     steps = db.relationship("Step", back_populates="test")
@@ -443,7 +466,7 @@ class Test(db.Model):
         s = next((step for step in self.steps if step.param.description == step_description), None)
         if not s:
             #step doesn't exist yet, need to create a new one
-            p = next((param for param in self.protocol.params if param.description == step_description))
+            p = next((param for param in self.protocol.params if param.description == step_description), None)
             if not p:
                 raise ValueError('step_description:{} not defined'.format(step_description))
             s = Step()

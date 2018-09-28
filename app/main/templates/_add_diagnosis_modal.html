@@ -1,0 +1,21 @@
+<!-- Modal -->
+<div class="modal fade" id="modal_add_diagnosis" tabindex="-1" role="dialog" aria-labelledby="modal_add_diagnosis_label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal_add_diagnosis_label">Add Diagnosis</h4>
+            </div>
+            <div class="modal-body">
+                <form method="post" action={{url_for('main.add_diagnosis') }} name="add_diagnosis", class="form-horizontal", role="form">
+                    {{ form_adddiagnosis.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form_adddiagnosis.name.label() }}
+                        {{ form_adddiagnosis.name() }}
+                    </div>
+                    {{ form_adddiagnosis.submit() }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

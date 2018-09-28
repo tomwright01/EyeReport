@@ -55,4 +55,5 @@ class Hexagon():
         self.eye = eye
         self.n1 = (None, None)
         self.p1 = (None, None)
-        self.data = None
+        self.data_raw = None
+        self.data_smooth = None

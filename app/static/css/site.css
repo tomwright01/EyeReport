@@ -1,0 +1,9 @@
+.form-control-inline{
+    min-width:0;
+    width: auto !important;
+    display: inline !important;
+}
+
+.form-control-fullwidth{
+    width: 90%;
+}

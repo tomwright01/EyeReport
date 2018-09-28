@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1> Report </h1>
+    <div class="container">
+        <form class="form-horizontal", method="post" role="form">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.information.label() }}
+                {{ form.information(class="form-control") }}
+                {% for error in form.information.errors %}
+                    <span class="label label-warning">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <table class="table">
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                    <th>Left</th>
+                    <th>Right</th>
+                </tr>
+                {% for fieldgroup in paramgroups %}
+                    {% include '_ergparam.html' %}
+                {% endfor %}
+            </table>
+            <div class="form-group">
+                {{ form.erg_comment.label() }}
+                {{ form.erg_comment(class="form-control") }}
+                {% for error in form.erg_comment.errors %}
+                    <span class="label label-warning">{{ error }}</span>
+                {% endfor %}
+            </div>
+            {{ form.erg_submit() }}
+        </form>
+    </div>
+{% endblock %}
+            

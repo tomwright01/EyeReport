@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block app_content %}
+<div class="panel panel-default"
+    <div class="panel-heading">
+        Name: {{ p.phi.fname }} {{ p.phi.lname }}
+        DoB: {{ p.phi.dob }}
+    </div>
+    <table class="table table-striped">
+        {% for visit in p.visits %}
+            <tr>
+                {% include '_visit.html' %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

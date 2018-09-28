@@ -1,3 +1,4 @@
 # -*- coding: utf-8 -*-
+from app import create_app, db
 
-from app import app
+app=create_app()

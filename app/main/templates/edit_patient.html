@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block modals %}
+    {% include '_add_doctor_modal.html' %}
+    {% include '_add_diagnosis_modal.html' %}
+{% endblock %}
+{% block app_content %}
+    <h1>Patient</h1>
+    <div class="container">
+        <form class="form-horizontal", method="POST", role="form">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.fname.label() }}
+            {{ form.fname(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.lname.label() }}
+            {{ form.lname(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.sex.label() }}
+            {{ form.sex(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.dob.label() }}
+            {{ form.dob(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                {{ form.doctor.label() }}
+                {{ form.doctor(class="form-control") }}
+                <span class="input-group-btn input-group-addon">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#modal_add_doctor" type="button">
+                        Add new doctor
+                    </button>
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                {{ form.diagnosis.label() }}
+                {{ form.diagnosis(class="form-control") }}
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#modal_add_diagnosis" type="button">
+                        Add new diagnosis
+                    </button>
+                </span>
+            </div>
+        </div>
+        </form>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+<div class="panel panel-default" data-href="{{ url_for('main.patient', id=p.id) }}">
+    <div class="panel-heading">
+        <h4 class="panel-title">Family name: {{ p.phi.lname }}</h4>
+    </div>
+    <ul>
+        <li>First Name:{{ p.phi.fname }}</li>
+        <li>DoB: {{ p.phi.dob }}</li>
+        <li>Gender: {{ p.phi.gender }}</li>
+    </ul>
+</div>
