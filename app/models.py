@@ -274,7 +274,7 @@ class StepChannel(db.Model):
     @hybrid_property
     def channel_name(self):
         if self.step.test.protocol.protocol_class == 'mferg':
-            names = {1: 'RE_raw', 2: 'LE_raw', 3: 'RE_smooth', 4: 'LE_smooth'}
+            names = {0: 'RE_raw', 1: 'LE_raw', 2: 'RE_smooth', 3: 'LE_smooth'}
         else:
             names = {1: 'RE', 2: 'LE', 3: 'RE_OP', 4: 'LE_OP'}
         try:
@@ -285,7 +285,7 @@ class StepChannel(db.Model):
     @channel_name.setter
     def channel_name(self, name):
         if self.step.test.protocol.protocol_class == 'mferg':
-            names = {'RE_raw': 1, 'LE_raw': 2,'RE_smooth': 3, 'LE_smooth': 4}
+            names = {'RE_raw': 0, 'LE_raw': 1,'RE_smooth': 2, 'LE_smooth': 3}
         else:
             names = {'RE': 1, 'LE': 2,'RE_OP': 3, 'LE_OP': 4}
 
@@ -483,7 +483,6 @@ class TimeSeries(db.Model):
     __tablename__ = 'timeseries'
     id = db.Column(db.Integer, primary_key=True)
     is_trial = db.Column(db.Boolean, nullable=False)
-    result_id = db.Column(db.Integer, db.ForeignKey("results.id"))
     result = db.relationship("Result", back_populates="time_series")
     start = db.Column(db.Integer, nullable=False)
     interval = db.Column(db.Numeric, nullable=False)
@@ -541,6 +540,7 @@ class TimeSeriesData(db.Model):
     """
     __tablename__ = 'timeseriesdata'
     id = db.Column(db.Integer, primary_key=True)
+    timeseries_id = db.Column(db.Integer, db.ForeignKey("timeseries.id"))
     timeseries = db.relationship('TimeSeries',
                                  secondary=timeseries_timeseriesdata,
                                  back_populates="data")
