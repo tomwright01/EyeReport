@@ -1,0 +1,42 @@
+<div class="row">
+    <div class="col-md-4 h4">{{ fieldgroup.label }}</div>
+    <div class="col-md-4 erg-control">
+        {{ fieldgroup.fields[0].label(class="sr-only") }}
+        {{ fieldgroup.fields[0](class="form-control-inline erg-input") }}
+        <div class="dropdown form-control-inline">
+            <button type="button" class="btn btn-default dropdown-toggle form-inline" href="#" data-toggle="dropdown" aria-expanded="false" aria-haspopup="true" id="f1">Select</button>
+                <ul class="dropdown-menu" aria-labelledby="f1">
+                {% for input in fieldgroup.inputs %}
+                    <li class="report-select">{{ input }}</li>
+                {% endfor %}
+                </ul>
+        </div>
+    </div>
+    <div class="col-md-4">
+        {{ fieldgroup.fields[1].label(class="sr-only") }}
+        {{ fieldgroup.fields[1](class="form-control-inline erg-input") }}
+        <div class="dropdown form-control-inline">
+            <button type="button" class="btn btn-default dropdown-toggle form-inline" href="#" data-toggle="dropdown" aria-expanded="false" aria-haspopup="true" id="f1">Select</button>
+                <ul class="dropdown-menu" aria-labelledby="f1">
+                {% for input in fieldgroup.inputs %}
+                    <li class="report-select">{{ input }}</li>
+                {% endfor %}
+                </ul>
+        </div>
+    </div>
+</div>
+{% if fieldgroup.errors %}
+    <div class="row">
+        <div class="col-md-4">&nbsdp;</div>
+        <div class="col-md-4">
+            {% for error in fieldgroup.fields[0].errors %}
+                <span class="label label-warning">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4">
+            {% for error in fieldgroup.fields[1].errors %}
+                <span class="label label-warning">{{ error }}</span>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

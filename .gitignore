@@ -4,3 +4,4 @@ config.py
 .spyproject/
 app/static/js/plotly-latest.min.js
 *.pyc
+migrations/

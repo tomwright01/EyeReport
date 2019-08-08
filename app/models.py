@@ -142,6 +142,7 @@ class Doctor(db.Model):
     phone = db.Column(db.Unicode(10))
     fax = db.Column(db.Unicode(10))
     email = db.Column(db.Unicode(128))
+    prefered_contact = db.Column(db.Enum('email','fax', 'both', name='contact_types'))
     patients = db.relationship("Patient", back_populates="doctor")
     __table_args__ = (db.UniqueConstraint('lname','fname', name='uc_doctor'),)
     
@@ -163,7 +164,7 @@ class Visit(db.Model):
     visit_date = db.Column(db.Date, nullable=False, index=True)
     notes = db.Column(db.UnicodeText)
     tests = db.relationship("Test", back_populates="visit")
-    report = db.relationship("Report", back_populates="visit")
+    report = db.relationship("Report", back_populates="visit", uselist=False)
     __table_args__ = (db.UniqueConstraint('patient_id','visit_date', name='pk_visit'),)
     
     def get_add_test(self, test_date, create=False):
@@ -175,7 +176,7 @@ class Visit(db.Model):
             if test.test_date == test_date:
                 return(test)
         if not create:
-            logger.debug('Test date:{} not found for visit id:{}, creeate false, skipping'
+            logger.debug('Test date:{} not found for visit id:{}, create false, skipping'
                          .format(test_date.strftime('%Y-%m-%d:%H:%m'),
                                  self.id))
             return(None)
@@ -388,11 +389,23 @@ class Report(db.Model):
     erg_comment = db.Column(db.UnicodeText)
     mferg_comment = db.Column(db.UnicodeText)
     perg_comment = db.Column(db.UnicodeText)
-    fvep_comment = db.Column(db.UnicodeText)
-    pvep_comment = db.Column(db.UnicodeText)
+    vep_comment = db.Column(db.UnicodeText)
     overview_comment = db.Column(db.UnicodeText)
     
+    eog_dt_amp_re = db.Column(db.Numeric(3,1))
+    eog_dt_amp_le = db.Column(db.Numeric(3,1))
+    eog_lp_amp_re = db.Column(db.Numeric(3,1))
+    eog_lp_amp_le = db.Column(db.Numeric(3,1))
+    eog_lp_time_re = db.Column(db.Numeric(3,1))
+    eog_lp_time_le = db.Column(db.Numeric(3,1))
+    eog_ratio_re = db.Column(db.Numeric(4,2))
+    eog_ratio_le = db.Column(db.Numeric(4,2))
+    eog_comment = db.Column(db.UnicodeText)
     
+    erg_complete = db.Column(db.Boolean, nullable=False)
+    mferg_complete = db.Column(db.Boolean, nullable=False)
+    vep_complete = db.Column(db.Boolean, nullable=False)
+    eog_complete = db.Column(db.Boolean, nullable=False)
 
 class Protocol(db.Model):
     """
@@ -483,6 +496,7 @@ class TimeSeries(db.Model):
     __tablename__ = 'timeseries'
     id = db.Column(db.Integer, primary_key=True)
     is_trial = db.Column(db.Boolean, nullable=False)
+    result_id = db.Column(db.Integer, db.ForeignKey("results.id"))
     result = db.relationship("Result", back_populates="time_series")
     start = db.Column(db.Integer, nullable=False)
     interval = db.Column(db.Numeric, nullable=False)
@@ -540,7 +554,7 @@ class TimeSeriesData(db.Model):
     """
     __tablename__ = 'timeseriesdata'
     id = db.Column(db.Integer, primary_key=True)
-    timeseries_id = db.Column(db.Integer, db.ForeignKey("timeseries.id"))
+    #timeseries_id = db.Column(db.Integer, db.ForeignKey("timeseries.id"))
     timeseries = db.relationship('TimeSeries',
                                  secondary=timeseries_timeseriesdata,
                                  back_populates="data")

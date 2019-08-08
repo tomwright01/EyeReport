@@ -4,6 +4,7 @@
     <div class="panel-heading">
         Name: {{ p.phi.fname }} {{ p.phi.lname }}
         DoB: {{ p.phi.dob }}
+        <span class="pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"</span> Add visit</span>
     </div>
     <table class="table table-striped">
         {% for visit in p.visits %}

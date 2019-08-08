@@ -17,35 +17,32 @@
             {{ form.lname(class="form-control") }}
         </div>
         <div class="form-group">
-            {{ form.sex.label() }}
-            {{ form.sex(class="form-control") }}
+            {{ form.gender.label() }}
+            {{ form.gender(class="form-control") }}
         </div>
         <div class="form-group">
             {{ form.dob.label() }}
             {{ form.dob(class="form-control") }}
         </div>
-        <div class="form-group">
-            <div class="input-group">
+        <div class="input-group">
+            <div class="form-group">
                 {{ form.doctor.label() }}
                 {{ form.doctor(class="form-control") }}
-                <span class="input-group-btn input-group-addon">
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#modal_add_doctor" type="button">
-                        Add new doctor
-                    </button>
-                </span>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#modal_add_doctor" type="button">
+                    Add new doctor
+                </button>
             </div>
         </div>
-        <div class="form-group">
-            <div class="input-group">
+        <div class="input-group">
+            <div class="form-group">
                 {{ form.diagnosis.label() }}
                 {{ form.diagnosis(class="form-control") }}
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#modal_add_diagnosis" type="button">
-                        Add new diagnosis
-                    </button>
-                </span>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#modal_add_diagnosis" type="button">
+                    Add new diagnosis
+                </button>
             </div>
         </div>
+        {{ form.submit() }}
         </form>
     </div>
 

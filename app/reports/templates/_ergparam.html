@@ -1,48 +1,26 @@
-                <tr>
-                    <td>
-                        <a href="#{{ fieldgroup.name + '_alt' }}" data-toggle="collapse"
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </a>
-                    </td>
-                    <th>{{ fieldgroup.label }}</th>
-                    <td>
-                        <div class="form-group">
-                            {{ fieldgroup.fields[0].label(class="sr-only") }}
-                            {{ fieldgroup.fields[0](class="form-control-fullwidth") }}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            {{ fieldgroup.fields[1].label(class="sr-only") }}
-                            {{ fieldgroup.fields[1](class="form-control-fullwidth") }}
-                        </div>
-                    </td>
-                </tr>
-                <tr class="collapse" id="{{ fieldgroup.name + '_alt' }}">
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>{{ fieldgroup.fields[2]() }}</td>
-                    <td>{{ fieldgroup.fields[3]() }}</td>
-                </tr>
-                {% if fieldgroup.errors %}
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>
-                        {% for error in fieldgroup.fields[0].errors %}
-                            <span class="label label-warning">{{ error }}</span>
-                        {% endfor %}
-                        {% for error in fieldgroup.fields[2].errors %}
-                            <span class="label label-warning">{{ error }}</span>
-                        {% endfor %}
-                    </td>
-                    <td>
-                        {% for error in fieldgroup.fields[1].errors %}
-                            <span class="label label-warning">{{ error }}</span>
-                        {% endfor %}
-                        {% for error in fieldgroup.fields[3].errors %}
-                            <span class="label label-warning">{{ error }}</span>
-                        {% endfor %}
-                    </td>
-                </tr>
-                {% endif %}
+<div class="row">
+    <div class="col-md-4 h4">{{ fieldgroup.label }}</div>
+    <div class="col-md-4 erg-control">
+        {{ fieldgroup.fields[0].label(class="sr-only") }}
+        {{ fieldgroup.fields[0](class="form-control-inline " + fieldgroup.class) }}
+    </div>
+    <div class="col-md-4">
+        {{ fieldgroup.fields[1].label(class="sr-only") }}
+        {{ fieldgroup.fields[1](class="form-control-inline " + fieldgroup.class) }}
+    </div>
+</div>
+{% if fieldgroup.errors %}
+    <div class="row">
+        <div class="col-md-4">&nbsp;</div>
+        <div class="col-md-4">
+            {% for error in fieldgroup.fields[0].errors %}
+                <span class="label label-warning">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="col-md-4">
+            {% for error in fieldgroup.fields[1].errors %}
+                <span class="label label-warning">{{ error }}</span>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

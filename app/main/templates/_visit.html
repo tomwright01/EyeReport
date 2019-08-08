@@ -1,9 +1,24 @@
-<div class="panel panel-default">
+<div class="panel panel-default"  data-href="{{ url_for('reports.report', visit_id=visit.id) }}">
     <div class="panel-header">
         <h4>Date: {{ visit.visit_date }}</h4>
     </div>
     <div class="panel-content">
-        Some info here
+        {% if visit.report %}
+            <span>Tests Performed:</span>
+            {% if visit.report.erg_complete %}
+                <span>ERG</span>
+            {% endif %}
+            {% if visit.report.mferg_complete %}
+                <span>mfERG</span>
+            {% endif %}
+            {% if visit.report.vep_complete %}
+                <span>VEP</span>
+            {% endif %}
+            {% if visit.report.eog_complete %}
+                <span>EOG</span>
+            {% endif %}
+            <p> {{ visit.report.overview_comment }}</p>
+        {% endif %}
     </div>
 </div>
         

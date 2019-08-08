@@ -32,6 +32,7 @@ def parse_contents(f, sep):
     Read the contents table from an espion export file.
     Returns a dict with the contents
     """
+    logger.debug('Parsing contents')
     start_str = 'Contents Table'
     contents_table = {}
 
@@ -51,7 +52,7 @@ def parse_contents(f, sep):
     return contents_table
 
 def parse_header_section(f, contents, sep):
-
+    logger.debug('Parsing header table')
     if not 'Header Table' in contents.keys():
         raise FileError
 
@@ -80,6 +81,7 @@ def parse_header_section(f, contents, sep):
     return(headers)
 
 def parse_marker_section(f, contents, sep):
+    logger.debug('Parsing marker table')
     if not 'Marker Table' in contents.keys():
         raise FileError
 
@@ -141,6 +143,7 @@ def parse_marker_section(f, contents, sep):
     return(markers)
 
 def parse_summary_table(f, contents, sep):
+    logger.debug('Parsing summary table')
     if not 'Summary Table' in contents.keys():
         raise FileError
 
@@ -169,6 +172,7 @@ def parse_summary_table(f, contents, sep):
     return steps
 
 def parse_stimulus_table(f, contents, sep):
+    logger.debug('Parsing stimulus table')
     if not 'Stimulus Table' in contents.keys():
         raise FileError('Stimulus table not found')
 
@@ -191,6 +195,14 @@ def parse_stimulus_table(f, contents, sep):
     return stimuli
 
 def parse_data_table(f, contents, sep, summary_table):
+    """
+    Read the data table.
+    Does this by reading an entire line then splitting the values and appending 
+    them to the individual trials.
+    done this way so we only loop through the file once instead of
+    once per trial
+    """
+    logger.debug('Parsing data table')
     if not 'Data Table' in contents.keys():
         raise FileError('Data table not found')
 
@@ -283,12 +295,17 @@ def parse_data_table(f, contents, sep, summary_table):
         for step_id, step in data.items():
             for channel_id, channel in step.channels.items():
                 for result_id, result in channel.results.items():
+                    if values[result.column - 1] == '':
+                        # have a problem here if a subsequent step has a longer time series
+                        continue
                     result.data.values.append(float(values[result.column - 1]))
+
                     for trial_no in range(result.trial_count):
-                        result.trials[trial_no].values.append(float(values[result.column + trial_no]))
+                        result.trials[trial_no].values.append(float(values[result.column + (trial_no)]))
     return(data)
 
 def read_export_file(filepath, sep='\t'):
+    logger.debug('Reading file:{}'.format(filepath))
     with open(filepath, 'r') as f:
         line = f.readline()
         if not line.strip().split(sep)[0] == 'Contents Table':

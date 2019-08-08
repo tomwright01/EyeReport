@@ -1,37 +1,133 @@
 {% extends "base.html" %}
 
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('reports.static', filename='style.css') }}">
+{% endblock %}
+
+
 {% block app_content %}
     <h1> Report </h1>
-    <div class="container">
         <form class="form-horizontal", method="post" role="form">
             {{ form.hidden_tag() }}
-            <div class="form-group">
-                {{ form.information.label() }}
-                {{ form.information(class="form-control") }}
-                {% for error in form.information.errors %}
-                    <span class="label label-warning">{{ error }}</span>
-                {% endfor %}
+            <div class="row">
+                <div class="form-group">
+                    {{ form.information.label() }}
+                    {{ form.information(class="form-control") }}
+                    {% for error in form.information.errors %}
+                        <span class="label label-warning">{{ error }}</span>
+                    {% endfor %}
+                </div>
             </div>
-            <table class="table">
-                <tr>
-                    <th>&nbsp;</th>
-                    <th>&nbsp;</th>
-                    <th>Left</th>
-                    <th>Right</th>
-                </tr>
-                {% for fieldgroup in paramgroups %}
-                    {% include '_ergparam.html' %}
-                {% endfor %}
-            </table>
-            <div class="form-group">
-                {{ form.erg_comment.label() }}
-                {{ form.erg_comment(class="form-control") }}
-                {% for error in form.erg_comment.errors %}
-                    <span class="label label-warning">{{ error }}</span>
-                {% endfor %}
+            <div class="row">
+                <div class="form-group">
+                    {{ form.testComment.label() }}
+                    {{ form.testComment(class="form-control") }}
+                    {% for error in form.testComment.errors %}
+                        <span class="label label-warning">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-inline">
+                    <div class="form-group col-md-3">
+                        {{ form.ergComplete.label() }} {{ form.ergComplete() }}
+                    </div>
+                    <div class="form-group col-md-3">
+                        {{ form.mfergComplete.label() }} {{ form.mfergComplete() }}
+                    </div>
+                    <div class="form-group col-md-3">
+                        {{ form.vepComplete.label() }} {{ form.vepComplete() }}
+                    </div>
+                    <div class="form-group col-md-3">
+                        {{ form.eogComplete.label() }} {{ form.eogComplete() }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#ERG">ERG</a></li>
+                    <li><a data-toggle="tab" href="#mfERG">mfERG</a></li>
+                    <li><a data-toggle="tab" href="#VEP">VEP</a></li>
+                    <li><a data-toggle="tab" href="#EOG">EOG</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="ERG" class="tab-pane fade in active">
+                        <!-- Start ERG form -->
+                        <div class="row">
+                            <div class="col-md-4">&nbsp;</div>
+                            <div class="col-md-4 h4">Left</div>
+                            <div class="col-md-4 h4">Right</div>
+                        </div>
+                        {% for fieldgroup in paramgroups['erg'] %}
+                            {% include '_ergparam.html' %}
+                        {% endfor %}
+                        <div class="row">
+                            <div class="form-group">
+                                {{ form.erg_comment.label() }}
+                                {{ form.erg_comment(class="form-control") }}
+                                {% for error in form.erg_comment.errors %}
+                                    <span class="label label-warning">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <!-- End ERG form -->
+                    </div>
+                    <div id="mfERG" class="tab-pane fade"
+                        <!-- Start mfERG form -->
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                {{ form.mferg_comment.label() }}
+                                {{ form.mferg_comment(class="form-control") }}
+                                {% for error in form.mferg_comment.errors %}
+                                        <span class="label label-warning">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <!-- End mfERG form -->
+                    </div>
+                    <div id="VEP" class="tab-pane fade"
+                        <!-- Start VEP form -->
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                {{ form.vep_comment.label() }}
+                                {{ form.vep_comment(class="form-control") }}
+                                {% for error in form.vep_comment.errors %}
+                                        <span class="label label-warning">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <!-- End VEP form -->
+                    </div>
+                    <div id="EOG" class="tab-pane fade">
+                        <!-- Start EOG form -->
+                        <div class="row">
+                            <div class="col-md-4">&nbsp;</div>
+                            <div class="col-md-4 h4">Left</div>
+                            <div class="col-md-4 h4">Right</div>
+                        </div>
+                        {% for fieldgroup in paramgroups['eog'] %}
+                            {% include '_ergparam.html' %}
+                        {% endfor %}
+                        <div class="row">
+                            <div class="form-group">
+                                {{ form.eog_comment.label() }}
+                                {{ form.eog_comment(class="form-control") }}
+                                {% for error in form.eog_comment.errors %}
+                                    <span class="label label-warning">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <!-- End EOG form -->
+                    </div>
+
+                </div>
             </div>
             {{ form.erg_submit() }}
         </form>
-    </div>
 {% endblock %}
-            
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript" src={{ url_for('reports.static', filename='scripts.js') }}></script>
+{% endblock %}

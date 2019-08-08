@@ -1,0 +1,228 @@
+% arara: lualatex
+% !arara: indent: {overwrite: yes}
+\documentclass[12pt]{article}
+
+\usepackage{fontspec}
+\setmainfont[Ligatures=TeX]{Georgia}
+\setsansfont[Ligatures=TeX]{Arial}
+
+\usepackage{textcomp}
+\usepackage{etoolbox, refcount}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{gensymb}
+\usepackage{units}
+\usepackage{booktabs}
+\graphicspath{ {./images/} }
+
+\usepackage{xcolor}
+
+\usepackage{geometry}
+\geometry{letterpaper, portrait, left=1cm, right=1cm, top=2cm}
+
+% Variables for inserting in text
+\newcommand{\fname}{First Name}
+\newcommand{\lname}{Last Name}
+\newcommand{\dob}{yyyy-mm-dd}
+\newcommand{\sex}{M|F}
+\newcommand{\testdate}{yyyy-mm-dd}
+\newcommand{\doctor}{Dr.}
+
+% page setup
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textsc{\fname{} \lname{}\\\dob{}}}
+\rhead{\textsc{Test date: \testdate{}}}
+\rfoot{ Page \thepage\ of \pageref{LastPage}}
+
+% below here creates auto wrapping columns for tests performed
+\newcounter{countitems}
+\newcounter{nextitemizecount}
+\newcommand{\setupcountitems}{%
+  \stepcounter{nextitemizecount}%
+  \setcounter{countitems}{0}%
+  \preto\item{\stepcounter{countitems}}%
+}
+\makeatletter
+\newcommand{\computecountitems}{%
+  \edef\@currentlabel{\number\c@countitems}%
+  \label{countitems@\number\numexpr\value{nextitemizecount}-1\relax}%
+}
+\newcommand{\nextitemizecount}{%
+  \getrefnumber{countitems@\number\c@nextitemizecount}%
+}
+\newcommand{\previtemizecount}{%
+  \getrefnumber{countitems@\number\numexpr\value{nextitemizecount}-1\relax}%
+}
+\makeatother    
+\newenvironment{AutoMultiColItemize}{%
+\ifnumcomp{\nextitemizecount}{>}{3}{\begin{multicols}{2}}{}%
+\setupcountitems\begin{itemize}}%
+{\end{itemize}%
+\unskip\computecountitems\ifnumcomp{\previtemizecount}{>}{3}{\end{multicols}}{}}
+% end auto wrap
+
+\newenvironment{heading}
+{\begin{flushleft}
+	 \begin{large}
+	\bfseries
+}
+{\end{large}
+	\end{flushleft}
+}
+
+\newsavebox{\mybox}
+\newenvironment{boxed}
+{\noindent\begin{lrbox}{\mybox}\begin{minipage}{\textwidth}}
+{\end{minipage}\end{lrbox}\fbox{\usebox{\mybox}}}
+
+
+\title{Electrophysiology Report}
+\author{Tom Wright}
+\date{June 2019}
+
+
+
+\begin{document}
+\thispagestyle{plain}
+    \centering
+    \begin{minipage}[t][6cm][t]{.3\textwidth}
+		\raggedleft
+        \includegraphics[width=\textwidth]{keilogo}
+        \includegraphics[width=\textwidth]{khlogo}
+			\textsc{Electrophysiology Report}
+
+    \end{minipage}%
+	\begin{minipage}[t][6cm][t]{.5\textwidth}
+		\centering
+		\large
+		\begin{tabular}{|c c|}
+			\hline
+			\textbf{Last Name} & \textbf{First Name} \\
+   		\lname{} & \fname{} \\
+			& \\
+		   \textbf{Date of Birth} & \textbf{Sex} \\
+		   \textcolor{gray}{(yyyy-mm-dd)} &  \\
+    		\dob{} & \sex{} \\
+			& \\
+    		\textbf{Date of Test} & \textbf{Referring Doctor} \\
+		   \textcolor{gray}{(yyyy-mm-dd)} &  \\
+			\testdate{} & \doctor{} \\
+			& \\
+    		\hline
+		\end{tabular}
+	\end{minipage}
+% Intake information
+\begin{boxed}
+\underline{\textbf{Information:}} 
+test
+\end{boxed}
+
+% Tests performed
+\noindent\fbox{%
+	\parbox{\textwidth}{%
+		\begin{itemize}
+			\item Tests Performed:
+		\begin{AutoMultiColItemize}
+			\item Full-field Electroretinogram
+			\item Multifocal Electroretinogram
+			\item Electrooculogram
+			\item Visual evoked potential (flash)
+			\item Visual evoked potential (pattern)
+			\item Electro-oculogram
+		\end{AutoMultiColItemize}
+	\end{itemize}
+	}%
+}
+% Overview
+\begin{boxed}
+\underline{\textbf{Summary:}}
+\end{boxed}
+
+\begin{boxed}
+\begin{heading}
+Full-field Electroretinogram
+\end{heading}
+
+{\footnotesize{\textbf{All recordings conform to the International Society of Clinical Electrophysiology (ISCEV) Standard for Full-field Electrophysiology (2015) update. All flashes are white light of 4ms duration. Responses are filtered with a 300Hz high-pass filter. Scotopic stimuli are presented after 20 minutes dark adaptation, photopic stimui are presented against $30 cd{\cdot}m^2$ background illumination after 10 minutes light adaptation. All recordings are manually checked for artifacts and averaged.}}}\newline
+
+\textbf{DA0.01:} Scotopic Rod isolating response. $0.01 cd{\cdot}s{\cdot}m^2$ flashes are presented every 5 seconds.\newline
+		\begin{tabularx}{\linewidth}{X X}
+			\textbf{RE:} Replace this test with a tokena-wave and b-wave within expected limits buth then some more text to get it over one line. & \textbf{LE:} a-wave and b-wave within expected limits buth then some more text to get it over one line.\\
+		\end{tabularx}
+\textbf{DA3.0:} Scotopic mixed Rod-Cone response. $3 cd{\cdot}m^2$ flashes are presented every 15 seconds.\newline
+		\begin{tabularx}{\linewidth}{X X}
+			\textbf{RE:} Replace this test with a tokena-wave and b-wave within expected limits buth then some more text to get it over one line. & \textbf{LE:} a-wave and b-wave within expected limits buth then some more text to get it over one line.\\
+		\end{tabularx}
+\textbf{DA3.0 OPs:} Scotopic oscillatory potentials. A 100 Hz low-pass filter is applied to the DA 3.0 stimulus.\newline
+		\begin{tabularx}{\linewidth}{X X}
+			\textbf{RE:} Replace this test with a tokena-wave and b-wave within expected limits buth then some more text to get it over one line. & \textbf{LE:} a-wave and b-wave within expected limits buth then some more text to get it over one line.\\
+		\end{tabularx}
+\textbf{DA10.0:} Scotopic strong flash response. $10 cd{\cdot}m^2$ flashes are presented every 20 seconds.\newline
+		\begin{tabularx}{\linewidth}{X X}
+			\textbf{RE:} Replace this test with a tokena-wave and b-wave within expected limits buth then some more text to get it over one line. & \textbf{LE:} a-wave and b-wave within expected limits buth then some more text to get it over one line.\\
+		\end{tabularx}
+\textbf{LA3.0:} Photopic cone isolating response. $3 cd{\cdot}m^2$ flashes are presented every 20 seconds.\newline
+		\begin{tabularx}{\linewidth}{X X}
+			\textbf{RE:} Replace this test with a tokena-wave and b-wave within expected limits buth then some more text to get it over one line. & \textbf{LE:} a-wave and b-wave within expected limits buth then some more text to get it over one line.\\
+		\end{tabularx}
+\textbf{30Hz flicker:} Photopic 30Hz flicker response. $3 cd{\cdot}m^2$ stimulus presented at 30Hz.\newline
+		\begin{tabularx}{\linewidth}{X X}
+			\textbf{RE:} Replace this test with a tokena-wave and b-wave within expected limits buth then some more text to get it over one line. & \textbf{LE:} a-wave and b-wave within expected limits buth then some more text to get it over one line.\\
+		\end{tabularx}
+\\
+\\
+\underline{\textbf{Comments:}} 
+\end{boxed}
+
+\begin{boxed}
+\begin{heading}
+Multifocal Electroretinogram
+\end{heading}
+{\footnotesize{\textbf{All recordings conform to the International Society of Clinical Electrophysiology (ISCEV) Standard for Clinical Multifocal Electrophysiology (2011 edition). The stimulus consists of 61 scaled hexagons stimulating approximately 60 degrees diameter of the central retina, mean luminance is $200 cd{\cdot}m^2$. Recording time is 207 seconds (m=14). A band-pass filter (10-100Hz) is applied. Automatic artifact rejection is set to 100 {\micro V}.}}}\\
+
+\underline{\textbf{Comments:}} 
+\end{boxed}
+
+\begin{boxed}
+\begin{heading}
+Visual Evoked Potential
+\end{heading}
+{\footnotesize{\textbf{All recordings conform to the International Society of Clinical Electrophysiology (ISCEV) Standard for Clinical Visual Evoked Potentials (2009 edition). 
+Pattern VEP – The pattern VEP tests the integrity of the visual pathway from the retina to the visual cortex. The response is primarily driven by the macular retina. The stimulus consists of a black – white checkerboard pattern alternating at 1Hz (2 reversals / second). At least 2 sizes of checkerboard are tested (1{\degree} and 0.25{\degree}). Responses are recorded using a 3 channel montage, with electrodes placed at Oz, O1 and O2 over the visual cortex, referenced to an electrode at Fz. 50-100 responses are recorded in each trial and the responses averaged.
+}}}\\
+
+\underline{\textbf{Comments:}} 
+\end{boxed}
+
+\begin{boxed}
+\begin{heading}
+Multifocal Electroretinogram
+\end{heading}
+{\footnotesize{\textbf{All recordings conform to the International Society of Clinical Electrophysiology (ISCEV) Standard for Clinical Multifocal Electrophysiology (2011 edition). The stimulus consists of 61 scaled hexagons stimulating approximately 60 degrees diameter of the central retina, mean luminance is $200 cd{\cdot}m^2$. Recording time is 207 seconds (m=14). A band-pass filter (10-100Hz) is applied. Automatic artifact rejection is set to 100 {\micro V}.}}\\
+Ring ratios are calculated according to the method described in \footnote{Using multifocal ERG ring ratios to detect and follow Plaquenil retinal toxicity: a review; Lyons, J.S. \& Severns, M.L. Doc Ophthalmol (2009) 118: 29. https://www.ncbi.nlm.nih.gov/pubmed/18465156}. Ratios exceeding the upper threshold are associated with plaquenil toxicity.}\\
+
+
+\center{\begin{tabular}{@{} l l l l l @{}}
+
+\toprule
+& RE & LE & Threshold & \\
+& Value & Value & Lower & Upper \\
+\midrule
+Ring 1 & & & 42.5 & \\
+Ring 1 / Ring 2 & & & 1.25 & 2.64 \\
+Ring 1 / Ring 3 & & & 1.81 & 4.51 \\
+Ring 1 / Ring 4 & & & 2.35 & 6.87 \\
+Ring 1 / Ring 5 & & & 2.49 & 7.71 \\
+\bottomrule
+\end{tabular}
+}
+\flushleft
+\underline{\textbf{Comments:}} 
+\end{boxed}
+
+
+\end{document}

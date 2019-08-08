@@ -7,3 +7,12 @@
 .form-control-fullwidth{
     width: 90%;
 }
+
+.erg-form{
+    display: flex;
+    flex: 1 0 auto;
+}
+
+.erg-input{
+    width: 100%;
+}

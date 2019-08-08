@@ -37,6 +37,8 @@ class StepChannel():
 class Step():
     def __init__(self, step_number):
         assert int(step_number) > 0, 'Invalid step number'
+        self.description = ''
+        self.stim = ''
         self.step_number = step_number
         self.channels = {}
         self.column = None
